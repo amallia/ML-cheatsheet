@@ -191,37 +191,39 @@ $\log \frac{p(x|C_1)}{p(x|C_2)} = w^Tx + w_0$
 
 \subsection{Linear regression}
 
-Find optimal $w$ and $b$ such that the average distance of points from the line is minimized:
+Find optimal $w$ and $w_0$ such that the average distance of points from the line is minimized.
+
 \begin{equation*}
-\underset{w,b}{\argmax} \ \sum_{i=1}^{n} \frac{1}{2} \left( w x_i + b - y_i \right)^2
+\underset{w,w_0}{\argmax} \ \sum_{t} \frac{1}{2} \left( w x^t + w_0 - r^t \right)^2
 \end{equation*}
+
 Differentiate, and solution is
+
 \begin{equation*}
-\left[ \sum_{i = 1}^{n} x_i x_i^T \right] w = \sum_{i = 1}^{n} y_i x_i
+\left[ \sum_{t} x^t (x^t)^T \right] w = \sum_{t} r^t x^t
 \end{equation*}
 
-$y$ as Gaussian:
-\begin{align*}
-y_i &= \theta^T x_i + \epsilon\\
-\epsilon &\sim N(0, \gamma^2)\\
-P(\epsilon_i) &= \frac{1}{\sqrt{2\pi} \sigma} exp \left( - \frac{\epsilon_i^2}{2 \sigma^2} \right)\\
-P(y_i | x_i, \theta) &= \frac{1}{\sqrt{2 \pi} \sigma} exp \left( - \frac{(y_i - \theta^T x_i)^2}{2 \sigma^2} \right)
-\end{align*}
-
-Eigenvalues of $x^T x$ are positive. Use $x^T M x \geq 0 \:\forall x \in R^n$ to prove this:
-\begin{align*}
-v^T \sum_{i} x_i x_i^T v \geq 0\\
-\sum_{i} (v^T x_i)^2 \geq 0
-\end{align*}
-
-\emph{Note} that when the data does not span the entire space, $x^T x$ does not have full rank, and thus is non-invertible. This can be fixed by either decomposition through removing eigenvalues below a certain threshold, or adding a small $\epsilon$ to the diagonal of the matrix.
-
-\subsection{Mean Squared Error}
+\subsection{In one dimension}
 \begin{equation*}
-Err(g, D) = \frac{1}{N} \sum_k [r^k - g(x^t)]^2 	
+g(x^t, w_1,w_0) = w_1 x^t +. w_0	
 \end{equation*}
 
-\subsection{Multiple linear regression}
+$\begin{cases}
+\sum_t r^t &= N w_0 +w_1 \sum_t x^t	\\
+\sum_t r^t x^t &= w_0 \sum_t x^t +w_1 \sum_t (x^t)^2	
+\end{cases}$
+
+$A =\begin{bmatrix}
+    N & \sum_t x^t \\
+    \sum_t x^t & \sum_t (x^t)^2 \\
+\end{bmatrix}$ \quad
+$w = \begin{bmatrix} w_0 \\ w_1\end{bmatrix}$ \quad
+$y = \begin{bmatrix} \sum_t r^t \\ \sum_t r^t x^t\end{bmatrix}$
+\begin{equation*}
+w = A^-1 y	
+\end{equation*}
+
+\subsection{Polynomial linear regression}
 
 $D =\begin{bmatrix}
     1 & x_{1}^{1} & x_{2}^{1} & \dots & x_{k}^{1} \\
@@ -243,6 +245,22 @@ $w = (D^T D)^{-1} D^T r$
 
 \begin{equation*}
 g(x) = w_k x_k + w_{k−1} x_{k−1} + \cdots + w_1 x_1 + w_0
+\end{equation*}
+
+\subsection{Error measures}
+Squared error:\\
+\begin{equation*}
+Err(g, D) = \frac{1}{2} \sum_k [r^k - g(x^t)]^2 	
+\end{equation*}
+
+Mean squared error:\\
+\begin{equation*}
+Err(g, D) = \frac{1}{N} \sum_k [r^k - g(x^t)]^2 	
+\end{equation*}
+
+Absolute error:\\
+\begin{equation*}
+Err(g, D) = \sum_k [r^k - g(x^t)]
 \end{equation*}
 
 \section{Classification}
