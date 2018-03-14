@@ -4,9 +4,7 @@ before_install:
 script:
 - cd tex
 - mkdir _build
-- pdflatex -interaction=nonstopmode -output-directory=./_build ML-cheatsheet.tex
-- bibtex ./_build/ML-cheatsheet
-- pdflatex -interaction=nonstopmode -output-directory=./_build ML-cheatsheet.tex
+- pdflatex -output-directory _build ./ML-cheatsheet.tex
 deploy:
   provider: releases
   api_key:
