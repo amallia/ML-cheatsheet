@@ -1,0 +1,19 @@
+before_install:
+- sudo apt-get update
+- sudo apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+script:
+- cd tex
+- mkdir _build
+- pdflatex -interaction=nonstopmode -output-directory=./_build ML-cheatsheet.tex
+- bibtex ./_build/ML-cheatsheet
+- pdflatex -interaction=nonstopmode -output-directory=./_build ML-cheatsheet.tex
+deploy:
+  provider: releases
+  api_key:
+    secure: rs895hcqfpJJaV/ugI1T7281MFYFp9I2M7L38keLOT2xnJL2DQghnON8kpz/1SHafbDAFtNXJ0szefOs2YdkZZCAHUPD9V8EAL7WO4B7G9zW/rDjU1DnjrUVqHvgTYSHmrCQea2CKE2ARCKl5UkuvCEcuRR+qPLYNRLJiGqNRI0hZPSvGkAwKzgvx/o7UbIrCtwiiv8RWsFI9S3QlCIjxhgp94u4XLtwJIWX7h57XgKKFzBGXTBU2fNkZe56oQcfIg/SP6wintRrecryIXDrCwRl8ClSEoMN7m4HueTPj+TbsEIUz6rta48EFy4bRgOb7vwViPSWaiIC2fd/UByRwg3oBybnedyDDn+g6auZzLpea2cvX2esddDjN7rh/BHcFninJXZhMwFIxtvygWq5oDTbqb4bxvOkvYkOifa+lTDFwaAAZ34H45SCdZ8a4QFhgtmHDq8s2Bi+eMvvcSGiJDlApdFccr9ji3n++ij0jl++YivU/yCaR21y3jSgxbtZNUhi4bJsxhcLv9p7nu69lpf0xK+Hagpw0YTD5pljaBCg4AdeLebwHbbEpi+gaT85ZWGAXmnKT8An/8DCdI+t7dLjZ/v5kEObnSQ+pITImUrry6D+FSxbXHa758jbkYtqNFSxpLw4RI+hS99Uj4Dw4GcC9aohxe2gwU4I9I6uua0=
+  file:
+    - ./_build/ML-cheatsheet.pdf
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: master
