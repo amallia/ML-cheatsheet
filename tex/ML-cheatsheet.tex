@@ -5,6 +5,7 @@
 \usepackage[landscape]{geometry}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{graphicx}
 
 % To make this come out properly in landscape mode, do one of the following
 % 1.
@@ -142,7 +143,7 @@ MLE: p_0 = \sum_t x^t / N
 \frac{\sum_t x^t}{p_0} + \frac{\sum_t (1 - x^t)}{(1 - p_0)} = 0 \\
 (\sum_{i=1}^{n} x_i) \cdot (1 - \theta) &= \theta \cdot \sum_{i=1}^{n} (1-x_i) \\ 
 \sum_{t} x^t - \theta \cdot \sum_{t} &= \theta \cdot \sum_{t} (1-x^t) \\ 
-\theta = \frac{\sum_{t} x^t)}{\sum_{t} x^t + \sum_{t} (1-x^t)} &= \frac{n_1}{n}
+\theta = \frac{\sum_{t} x^t}{\sum_{t} x^t + \sum_{t} (1-x^t)} &= \frac{n_1}{n}
 \end{align*}
 
 \subsection{Gaussian (Normal)}
@@ -205,7 +206,7 @@ Differentiate, and solution is
 
 \subsection{In one dimension}
 \begin{equation*}
-g(x^t, w_1,w_0) = w_1 x^t +. w_0	
+g(x^t, w_1,w_0) = w_1 x^t + w_0	
 \end{equation*}
 
 $\begin{cases}
@@ -262,6 +263,9 @@ Absolute error:\\
 \begin{equation*}
 Err(g, D) = \sum_k [r^k - g(x^t)]
 \end{equation*}
+\subsection{Regularization}
+
+Regularization is the technique of adding an additional term to an error function (which measures prediction error) called a penalty term, that is higher if a hypothesis is more complex in some way. It is used to try to avoid overfitting.
 
 \section{Classification}
 
@@ -274,6 +278,9 @@ P(C_i|D) = \frac{P(C_i) p(D|C_i)}{p(D)}
 $\sum_i P(C_i) = 1$\\
 $p(D) = \sum_i P(C_i)p(D|C_i)$\\
 $\sum_i p(C_i | D) = 1$\\
+
+For $prior = p(\theta)$ \\
+$p(D) = \int_{\theta} P(\theta) p(D|\theta)$
 
 \subsection{Naive Bayes}
 Assumes that features are independent.\\
@@ -309,6 +316,39 @@ R(\alpha_i | D) = \sum_k \lambda_{ik} P(C_k | D)
 \end{equation*}
 Choose $\alpha_i$ if $R(\alpha_i | D) = \argmin_k R(\alpha_k|D)$\\
 
+\section{Bias-Variance decomposition}
+
+\begin{equation*}
+mse(\hat \theta) = bias(\hat \theta)^2  + variance(\hat \theta)
+\end{equation*}
+$\mu = E[\hat \theta]$
+\begin{align*}
+mse(d) &= E[(\hat \theta - \theta)^2] = E[((\hat \theta - \mu) + (\mu - \theta))^2] \\
+&= E[(\hat \theta - \mu)^2 +2(\hat \theta - \mu)(\mu - \theta)+ (\mu - \theta)^2] \\
+&=E[(\hat \theta - \mu)^2] + E[(\mu - \theta)^2] \\
+&= variance(\hat \theta) + bias(\hat \theta)^2 
+\end{align*}
+
+\subsection{Bias-–variance tradeoff}
+\begin{itemize}
+	\item The bias is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting).
+	\item The variance is an error from sensitivity to small fluctuations in the training set. High variance can cause an algorithm to model the random noise in the training data, rather than the intended outputs (overfitting).
+\end{itemize}
+
+\includegraphics[scale=.6]{images/bias-variance.png}
+
+$\theta$ is the parameter to be estimated. $d_ii$ are several estimates (denoted by '×') over diﬀerent samples $X_i$ . Bias is the diﬀerence between the expected value of $d$ and $\theta$. Variance is how much $d_i$ are scattered around the expected value. We would like both to be small.
+
+\section{Bias of an estimator}
+Let $d = d(X)$ be an estimator of $\theta$.
+
+\begin{equation*}
+bias_{\theta}(d) = E[d(X)] - \theta
+\end{equation*}
+
+If $bias_{\theta}(d)= 0$ for all $\theta$ values, then we say that $d$ is an unbiased estimator of $\theta$.
+
+With $x^t$ drawn from some density with mean $\mu$, $E[\sum_t x^t] = N \mu$.
 
 \section{Appendix}
 \subsection{Transpose of a matrix}
@@ -368,6 +408,7 @@ Transpose the "Matrix of Cofactors"(Adjugate)
 
 Multiply by 1/Determinant of the original matrix
 $A^{-1} = \frac{1}{det(A)} (A'')^T$
+\\
 \smallskip
 \rule{0.3\linewidth}{0.25pt}
 \scriptsize
