@@ -267,6 +267,11 @@ Err(g, D) = \sum_k [r^k - g(x^t)]
 
 Regularization is the technique of adding an additional term to an error function (which measures prediction error) called a penalty term, that is higher if a hypothesis is more complex in some way. It is used to try to avoid overfitting.
 
+\begin{equation*}
+\text{penalty term} = \lambda \sum_i w_i^2
+\end{equation*}
+
+
 \section{Classification}
 
 \subsection{Bayes' rule}
@@ -350,6 +355,13 @@ If $bias_{\theta}(d)= 0$ for all $\theta$ values, then we say that $d$ is an unb
 
 With $x^t$ drawn from some density with mean $\mu$, $E[\sum_t x^t] = N \mu$.
 
+\section{Variance of an estimator}
+
+\begin{equation*}
+variance_{\theta}(d) = E[(d - E[d])^2] 
+\end{equation*}
+
+
 \section{Appendix}
 \subsection{Transpose of a matrix}
 Switch the row and column indices of the matrix.
@@ -409,6 +421,12 @@ Transpose the "Matrix of Cofactors"(Adjugate)
 Multiply by 1/Determinant of the original matrix
 $A^{-1} = \frac{1}{det(A)} (A'')^T$
 \\
+
+\subsection{FPR and TPR}
+$FPR = FP/(TN + FP)$\\
+$TPR = TP/(TP + FN)$
+
+
 \smallskip
 \rule{0.3\linewidth}{0.25pt}
 \scriptsize
