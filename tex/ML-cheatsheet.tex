@@ -361,6 +361,236 @@ With $x^t$ drawn from some density with mean $\mu$, $E[\sum_t x^t] = N \mu$.
 variance_{\theta}(d) = E[(d - E[d])^2] 
 \end{equation*}
 
+\section{Linear discrimination}
+Advantages:
+\begin{itemize}
+	\item Fast prediction time
+	\item Small space to store the prediction function
+	\item Knowledge extraction (meaning of weights)
+\end{itemize}
+
+Two classes: $g(x) = g_1(x) - g_2(x) = w^T x +w_0$, choose $C_1$ is $g(x)>0$, $C_2$ otherwise.
+
+Multiple classes: Choose $C_i$ is $g_i(x) = max_j g_j(x)$.
+
+
+$y = P( C_1 | x )$ and $P ( C_2 | x ) = 1 − y$
+Choose $C_1$ if $y > 0.5$, which is $y/(1-y) > 1$ or $\log[y/(1-y)] > 0$, $C_2$ otherwise.
+
+Logit: $logit(y) = log[ y/(1-y) ]$ \\
+Its inverse is the logistic function, also called sigmoid: $sigmoid(z) = 1/(1+e^{-z})$
+
+\subsection{Logistic regression}
+$\log \frac{P(x|C_1)}{P(x|C_2)} = w^T x + w_0'$ \\
+$logit(P(C_1|x)) = \log \frac{P(x|C_1)}{1 - P(x|C_1)} = \log \frac{P(x|C_1)}{P(x|C_2)} + \log \frac{P(C_1)}{P(C_2)} = w^T x + w_0$ \\
+
+$y = \frac{1}{1 + e^{-(w^Tx+w_0 )}}$
+
+\subsection{Cross-Entropy error}
+$E(w, w_0, | X) = - \sum_t r^t \log y^t + (1 - r^t) \log (1 - y^t)$
+
+We use gradient-descent to minimize the cross-entropy error.
+
+\section{Decision trees}
+
+\textbf{Entropy}: $I = - \sum_i p^{i} \log_2 p^{i}$ where $p^i = \frac{N^i}{N}$
+When building the tree, at each node, the algorithm chooses the decision that minimizes: $\sum_{v \in V} \frac{S_v}{S} Entropy(S_v)$
+
+\textbf{Information-Gain}: $Entropy(S) - \sum_{v \in V} \frac{S_v}{S} Entropy(S_v)$
+
+\textbf{Pruning}: 
+\begin{itemize}
+	\item pre-pruning: early stopping
+	\item post-pruning: grow the whole tree then prune subtrees which overfit on the pruning set
+\end{itemize}
+
+Pre-pruning is faster, post-pruning is more accurate.
+
+
+\section{Dimensionality reduction}
+Motivation:
+\begin{itemize}
+	\item Reduce time complexity
+	\item Reduce space
+	\item Simpler models are more robust on small datasets
+	\item More interpretable
+\end{itemize}
+
+\textbf{Feature selection}: choose $k<d$ important features
+
+Forward selection: find the best feature one by one and add it iteratively at each step. \\
+Backward selection: start with all the features and remove one at a time.
+
+\textbf{Feature extraction}: project the $d$ original features to $k<d$ dimensions (i.e PCA)
+
+PCA is the technique to find a low-dimensional space such that when $x$ is projected there, information loss is minimized.
+The core idea is to project the data on the line that produces the highest variance possible.
+
+The projection of $x$ on the direction of $w$ is: $z = w^T x$.
+
+Find $w$ such that $Var(z)$ is maximized.
+$Var(z) = Var(w^T x) = E[ (w^Tx -w^T\mu )] = w^T \Sigma w$ where $\Sigma$ is the covariance matrix for $x$.
+
+$\mu = \begin{bmatrix}
+	\mu_1 \\	
+	\mu_2 \\	
+	\dots \\
+	\mu_d \\	
+\end{bmatrix}
+$ is vector of sample means for each column.
+
+Entry in the covariance matrix: $\frac{\sum_t (x_i^t -\mu_i) (x_j^t - \mu_j)}{N-1}$
+
+We want to find $w$ that maximizes $w^T \Sigma w$ such that $||w|| = 1$.
+Solution to this problem is Lagrangian multipliers.
+$w$ is the eigenvector of $\Sigma$ with the largest eigenvalue.
+   
+\section{Neural nets}
+
+\subsection{Regression}
+$y^t = \sum_h v_h z_h^t + v_0$ \\
+$\Delta v_h = \eta \sum_t (r^t - y^t) z_h^t$ \\
+$\Delta w_{hj} = -eta \frac{\partial E}{\partial w_{hj}} = - \eta \sum_t \frac{\partial E^t}{\partial y^t} \frac{\partial y^t}{\partial z_h^t}
+	\frac{\partial z_h^t}{\partial w_{hj}} = 
+	- \eta \sum_t - (r^t -y^t) v_h z_h^t(1-z_h^t)x_j^t = \eta \sum_t (r^t -y^t) v_h z_h^t(1-z_h^t)x_j^t$ \\
+
+The product of the first two terms $(r^t − y^t )v_h$ acts like the error term for hidden unit $h$. This error is backpropagated from the error to the hidden unit. $(r_t - y_t)$ is the error in the output, weighted by the "responsibility" of the hidden unit as given by its weight $v_h$. In the third term, $z_h(1 - z_h)$ is the derivative of the sigmoid and $x_j^t$ is the derivative of the weighted sum with respect to the weight $w_{hj}$.
+
+$E^t(w|x^t, r^t) = \frac{1}{2}(r^t-y^t)^2 = \frac{1}{2}[r^t-(w^tx^t)]^2$
+
+\subsection{Classification}
+Single sigmoid output: $y^t = sigmoid(w^Tx^t) = \frac{1}{1 + e^{-w^T x}}$ \\
+$E^t(w|x^t, r^t) = -r^t \log y^t - (1-r^t) \log(1-y^t)$ \\
+$k > 2$ softmax outputs: $y^t = \frac{e^{w_i^T x^t}}{\sum_k e^{w_k^T x^t}}$ \\
+$E^t({w_i}|x^t, r^t) = - \sum_i r_i^t \log y_i^t $
+
+\subsection{Generic update rule}
+$\Delta w_{ij}^t = \eta (r_i^t - y_i^t)x_j^t$
+
+\textbf{Batch gradient descent} calculates the error for each example in the training dataset, but only updates the model after all training examples have been evaluated.
+    One cycle through the entire training dataset is called a training epoch. Therefore, it is often said that batch gradient descent performs model updates at the end of each training epoch.
+    
+\begin{itemize}
+    \item Fewer updates to the model means this variant of gradient descent is more computationally efficient than stochastic gradient descent
+    \item The decreased update frequency results in a more stable error gradient and may result in a more stable convergence
+    \item The more stable error gradient may result in premature convergence of the model to a less optimal set of parameters.
+    \item The updates at the end of the training epoch require the additional complexity of accumulating prediction errors across all training examples.
+    \item 
+\end{itemize}
+
+\textbf{Stochastic gradient descent (SGD)}calculates the error and updates the model for each example in the training dataset.
+	Stochastic gradient descent is often called an online machine learning algorithm.
+\begin{itemize}
+	\item The frequent updates immediately give an insight into the performance of the model and the rate of improvement
+	\item Simpler to understand and implement
+	\item The increased model update frequency can result in faster learning
+	\item Updating the model so frequently is more computationally expensive than other configurations of gradient descent, taking significantly longer to train models on large datasets
+	\item The frequent updates can result in a noisy gradient signal, which may cause the model parameters and in turn the model error to jump around
+\end{itemize}
+
+\subsection{Backpropagation}
+\textbf{Chain rule:} $\frac{\partial E}{\partial w_{hj}} = \frac{\partial E}{\partial y_{i}}\frac{\partial y_i}{\partial z_{h}}\frac{\partial z_h}{\partial w_{hj}}$
+
+\textbf{Improving Convergence}
+\begin{itemize}
+	\item Momentum: is a value between 0 and 1 that increases the size of the steps taken towards the minimum by trying to jump from a local minima.
+	    The idea is to take a running average by incorporating the previous update in the current change as if there is a momentum due to previous updates.
+		$\Delta w_i^t = - \eta \frac{\partial E^t}{\partial w_i} + \alpha \Delta w_i^{t-1}$
+	\item Adaptive learning rate: take smaller and smaller steps as the error decreases.
+	$\Delta \eta = \begin{cases}
+		+a \text{ if } E^{t+\tau} < E^t \\
+		-b\eta \text{ otherwise}
+	\end{cases}$
+\end{itemize}
+
+\section{Clustering}
+
+Unsupervised learning problem.
+
+$Error = \sum_t || x^{(t)} - e(x^{(t)}) ||$ where $e(x^{(t)})$ cluster representative for $x^{(t)}$.
+Centroid is the mean of the cluster, defined as $m_i = \frac{\sum_{x \in C_i} x}{|C_i|}$
+\subsection{k-means clustering}
+Every cluster has a representative. Each example is assigned to the cluster having closest representative.
+Closeness can be measured using Euclidean distance.
+$||x-y||=\sqrt{\sum_{i=1}^d (x_i - y_i)^2}$
+
+Error is defined as $\sum_t || x^{(t)} - \rho(x^{(t)})||^2$ where $\rho(x^{(t)})$ is representative of $x^{(t)}$
+
+How to handle empty cluster:
+\begin{itemize}
+	\item choose the closest point in the dataset to the previous representative of the empty cluster
+	\item restart with new cluster representative
+	\item continue with remaining $k' < k$ clusters 
+	\item assign a new cluster representative to the point with highest squared error
+\end{itemize}
+
+\textbf{Soft clustering}: points are not assigned to a cluster, but the have probabilities of being in a clusters.
+
+\textbf{Clustering for concentric data}: concentric circles would have the exact same mean, so k-means is not suitable to separate them. If you know that your clusters will always be concentric circles, you can simply convert your cartesian (x-y) coordinates to polar coordinates, and use only the radius rho for clustering 
+
+
+\subsection{Expectation-Maximization for mixture of Gaussians}
+$E[z^{(j)} | x ] = p(z^{(j)} | x) = \frac{p(x|z^{(j)}) p(z^{(j)})}{p(x)} = \frac{p(x|z^{(j)})}{\sum_j p(x|z^{(j)})}$ \\
+$\mu^{(j)} = \frac{\sum_x x \cdot p(z{(j)} | x )}{\sum_x p(z^{(j)} | x)}$ \\
+
+$\log p(D|h) = \sum_i \log [p(x^{(i)} | z^{(1)})\frac{1}{2} +  p(x^{(i)} | z^{(2)})\frac{1}{2}]$
+
+
+
+\section{SVMs}
+\subsection{Maximum margin hyperplane}
+The hyperplane that maximizes margin. Margin is the distance from the hyperplane to the closest training example. Margin is equal to $\frac{1}{||w||}$ for the support vectors.
+
+$
+\begin{cases}
+	w^T x^{(t)} + w_0 \geq 1$ if $x^{(t)} = +1 \\ 
+	w^T x^{(t)} + w_0 \leq 1$ if $x^{(t)} = -1
+\end{cases}
+$
+
+Maximizing margin is the same as minimizing $||w||$ (or $||w||^2$)
+
+$r = \frac{g(x)}{||w||}$, if $g(x) = a x_1 + b x_2 + c = 0$ then $||w|| = \sqrt{a^2 +b^2}$
+
+Large numbers of support vector are an indication that overfitting might be occurring.
+High penalty parameter $\lambda$ increases the danger of overfitting.
+
+A good practice when training SVM is to normalize or standardize the attribute values. 
+
+When data is not linearly separable we use mapping to map to a new dimension where it is linearly separable. 
+
+\subsection{Kernel functions}
+
+\textbf{Polynomial kernel} Given $\phi(x): [1, \sqrt x_1, \sqrt x_2, \sqrt{x_1x_2}, x_1^2, x_2^2 ]$,
+so $K(x, y) = \phi(x) \cdot \phi(y) = (1 + x_1 y_1 + x_2 y_2)^2 = (1 + x \cdot y)^2$.
+For $d$ dimensions: $K(x, y) =(1 + x \cdot y)^d$
+
+\textbf{Gaussian (RBF) kernel} is $K(x, y) = e^{-\frac{||x-y||^2}{\sigma^2}}$
+
+The smaller the value of $\sigma$, the smaller the width of the Gaussian around the support vectors. This is likely to result in test points being classified according to the label of the closest support vector.
+\subsection{Soft-margin SVM}
+It can be used when data is not linearly separable. Suppose have separating hyperplane with some exception, as few points with smaller margin or in the wrong side of the hyperplane.
+
+We introduce a slack variable $\xi^{(i)}$ for every training example $x^{(i)}$, where $\xi^{(i)} \geq 0$. 
+
+Now we want to satisfy $w^T x^{(i)} + w_0 + \xi^{(i)} \geq 1$. 
+
+So now we minimize $\frac{1}{2} ||w||^2 + \lambda \sum_i \xi^{(i)}$
+
+
+\subsection{Advantages \& disadvantages of SVMs}
+Advantage: Kernels allow you to do well with complex data. 
+Disadvantages: slow training, difficulty in understanding how to method worked (w\ Gaussian kernel, results depend heavily on settings of tunable parameters like $\sigma$ and the choice of kernel.
+ 
+\section{Ensemble methods}
+Since there is no single learning algorithm that in any domain always induces the most accurate learner, by suitably combining multiple base-learners then, accuracy can be improved.
+
+\section{Bagging}
+Bagging is a voting method whereby base-learners are made different by training them over slightly different training sets.
+Generating $L$ slightly different samples from a given sample is done by bootstrap, where given a training set $X$ of size $N$, we draw $N$ instances randomly from $X$ with replacement. Because sampling is done with replacement, it is possible that some instances are drawn more than once and that certain instances are not drawn at all. When this is done to generate $L$ samples, these samples are similar because they are all drawn from the same original sample, but they are also slightly different due to chance.
+
+\section{Boosting}
+In boosting, we actively try to generate complementary base-learners by training the next learner on the mistakes of the previous learners.
 
 \section{Appendix}
 \subsection{Transpose of a matrix}
@@ -426,6 +656,17 @@ $A^{-1} = \frac{1}{det(A)} (A'')^T$
 $FPR = FP/(TN + FP)$\\
 $TPR = TP/(TP + FN)$
 
+\subsection{Eigenvalues and Eigenvectors}
+The characteristic polynomial of a matrix A is given by $|A - \lambda I|$. 
+We solve $det(A - \lambda I) = 0$ to find the eigenvalues. 
+
+For each eigenvalue $k$, to find the eigenvectors we look for the solution $v$ of the homogeneous system of equations $(A - k I)v=0$. This will produce a system of equations, whose solution is the eigenvector for the given eigenvalue.
+
+\subsection{Conditional entropy}
+\resizebox{.9 \textwidth/3}{!} 
+{
+ $H(Y|X) = \sum_x P[X=x] \cdot (\sum_y -P[Y=y | X=x] \cdot \log_2 P[Y=y|X=x])$
+}
 
 \smallskip
 \rule{0.3\linewidth}{0.25pt}
