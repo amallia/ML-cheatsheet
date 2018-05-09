@@ -453,6 +453,7 @@ $\Delta v_h = \eta \sum_t (r^t - y^t) z_h^t$ \\
 $\Delta w_{hj} = -eta \frac{\partial E}{\partial w_{hj}} = - \eta \sum_t \frac{\partial E^t}{\partial y^t} \frac{\partial y^t}{\partial z_h^t}
 	\frac{\partial z_h^t}{\partial w_{hj}} = 
 	- \eta \sum_t - (r^t -y^t) v_h z_h^t(1-z_h^t)x_j^t = \eta \sum_t (r^t -y^t) v_h z_h^t(1-z_h^t)x_j^t$ \\
+For multiple output nodes: $\Delta w_{hj} = \eta \sum_t [\sum_i (r_i^t -y_i^t)v_{ih}]z_h^t(1-z_h^t)x_j^t$
 
 The product of the first two terms $(r^t − y^t )v_h$ acts like the error term for hidden unit $h$. This error is backpropagated from the error to the hidden unit. $(r_t - y_t)$ is the error in the output, weighted by the "responsibility" of the hidden unit as given by its weight $v_h$. In the third term, $z_h(1 - z_h)$ is the derivative of the sigmoid and $x_j^t$ is the derivative of the weighted sum with respect to the weight $w_{hj}$.
 
